@@ -11,10 +11,10 @@ import traceback
 
 def load_vectorstore():
     embeddings_model = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-large")
-    if os.path.exists("ipl2023embeddings"):
-        st.write("Loading existing embeddings...")
+    if os.path.exists("iplembeddings"):
+        # st.write("Loading existing embeddings...")
         try:
-            vectorstore = FAISS.load_local("ipl2023embeddings", embeddings_model, allow_dangerous_deserialization=True)
+            vectorstore = FAISS.load_local("iplembeddings", embeddings_model, allow_dangerous_deserialization=True)
             return vectorstore
         except Exception as e:
             st.error(f"Error loading embeddings: {str(e)}")
@@ -22,7 +22,7 @@ def load_vectorstore():
                 st.error(traceback.format_exc())
             return None
     else:
-        st.error("Embeddings file 'ipl2023embeddings' not found. Please ensure it exists.")
+        # st.error("Embeddings file 'ipl2023embeddings' not found. Please ensure it exists.")
         return None
 
 def handle_userinput(user_question):
@@ -56,24 +56,24 @@ def main():
         st.error("HuggingFace API key not found. Please set the HUGGINGFACE_API_KEY environment variable.")
         return
 
-    st.set_page_config(page_title="Chat with IPL 2023", page_icon=":cricket_game:")
+    st.set_page_config(page_title="IPL chat bot ", page_icon=":cricket_game:")
     st.write(css, unsafe_allow_html=True)
 
-    st.header("Chat about IPL 2023 :cricket_game:")
+    st.header("IPL CHATBOT :cricket_game:")
 
     # Load vectorstore and initialize conversation at startup
     if "conversation" not in st.session_state:
         vectorstore = load_vectorstore()
         if vectorstore:
             st.session_state.conversation = get_conversation_chain(vectorstore)
-            st.success("Ready to answer questions about IPL 2023!")
+            st.success("Ready to answer questions about IPL 2023 and 2022")
         else:
             st.session_state.conversation = None
     
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    user_question = st.text_input("Ask anything about IPL 2023")
+    user_question = st.text_input("Ask anything about IPL 2023 and IPL 2022")
     if user_question:
         if st.session_state.conversation is None:
             st.error("Error: Conversation not initialized. Embeddings may be missing or failed to load.")
